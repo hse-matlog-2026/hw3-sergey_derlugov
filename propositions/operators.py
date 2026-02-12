@@ -23,6 +23,15 @@ def to_not_and_or(formula: Formula) -> Formula:
         ``'|'``.
     """
     # Task 3.5
+    return formula.substitute_operators({
+        'T':   Formula.parse('(p|~p)'),
+        'F':   Formula.parse('(p&~p)'),
+        '->':  Formula.parse('(~p|q)'),
+        '+':   Formula.parse('((p&~q)|(~p&q))'),
+        '<->': Formula.parse('((p&q)|(~p&~q))'),
+        '-&':  Formula.parse('~(p&q)'),
+        '-|':  Formula.parse('~(p|q)')
+    })
 
 def to_not_and(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
@@ -36,6 +45,9 @@ def to_not_and(formula: Formula) -> Formula:
         contains no constants or operators beyond ``'~'`` and ``'&'``.
     """
     # Task 3.6a
+    return to_not_and_or(formula).substitute_operators({
+        '|': Formula.parse('~(~p&~q)')
+    })
 
 def to_nand(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
@@ -49,6 +61,10 @@ def to_nand(formula: Formula) -> Formula:
         contains no constants or operators beyond ``'-&'``.
     """
     # Task 3.6b
+    return to_not_and(formula).substitute_operators({
+        '~': Formula.parse('(p-&p)'),
+        '&': Formula.parse('((p-&q)-&(p-&q))')
+    })
 
 def to_implies_not(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
@@ -62,6 +78,10 @@ def to_implies_not(formula: Formula) -> Formula:
         contains no constants or operators beyond ``'->'`` and ``'~'``.
     """
     # Task 3.6c
+    return to_not_and_or(formula).substitute_operators({
+        '&': Formula.parse('~(p->~q)'),
+        '|': Formula.parse('(~p->q)')
+    })
 
 def to_implies_false(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
@@ -75,3 +95,6 @@ def to_implies_false(formula: Formula) -> Formula:
         contains no constants or operators beyond ``'->'`` and ``'F'``.
     """
     # Task 3.6d
+    return to_implies_not(formula).substitute_operators({
+        '~': Formula.parse('(p->F)')
+    })
